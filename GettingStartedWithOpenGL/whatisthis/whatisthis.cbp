@@ -12,6 +12,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++0x" />
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
@@ -25,6 +26,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-std=c++0x" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -32,16 +34,27 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-Wnon-virtual-dtor" />
+			<Add option="-Wredundant-decls" />
+			<Add option="-Winline" />
+			<Add option="-Wunreachable-code" />
+			<Add option="-Wmissing-include-dirs" />
+			<Add option="-Wswitch-enum" />
+			<Add option="-Wswitch-default" />
+			<Add option="-Weffc++" />
 			<Add option="-Wall" />
+			<Add option="-std=c++0x" />
 		</Compiler>
 		<Linker>
 			<Add library="opengl32" />
-			<Add library="glu32" />
-			<Add library="glut32" />
+			<Add library="glfw3" />
+			<Add library="gdi32" />
+			<Add library="C:/Program Files (x86)/CodeBlocks/MinGW/lib/glew32s.lib" />
 		</Linker>
-		<Unit filename="main.cpp">
+		<Unit filename="glew.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
