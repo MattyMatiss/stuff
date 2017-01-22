@@ -1,48 +1,56 @@
-#include <GL/glut.h>
+#include <iostream>
+#define GLEW_STATIC
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
-void display()
-
+void error_callback(int error, const char* description)
 {
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glBegin(GL_QUADS);
-        glColor3f(1.0, 1.0, 1.0);
-        glVertex2i(250, 450);
-        glColor3f(0.0, 0.0, 1.0);
-        glVertex2i(250, 150);
-        glColor3f(0.0, 1.0, 0.0);
-        glVertex2i(550, 150);
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex2i(550, 450);
-        glEnd();
-
-        glutSwapBuffers();
-}
-
-void reshape(int w, int h)
-{
-        glViewport(0, 0, w, h);
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        gluOrtho2D(0, w, 0, h);
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+    std::cout << description << std::endl;
 }
 
 int main (int argc, char * argv[])
 {
-        glutInit(&argc, argv);
-        glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA); /*¬ключаем двойную буферизацию и четырехкомпонентный цвет*/
+    std::cout << "HI!" << std::endl;
 
-        glutInitWindowSize(800, 600);
-        glutCreateWindow("OpenGL lesson 1");
+    if (!glfwInit())
+    {
+        // Initialization failed
+        std::cout << "Failed to initialize GLFW" << std::endl;
+        glfwSetErrorCallback(error_callback);
+    }
 
-        glutReshapeFunc(reshape);
-        glutDisplayFunc(display);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-        glutMainLoop();
+    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", nullptr, nullptr);
 
-        return 0;
+    if (window == nullptr)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+
+    glewExperimental = GL_TRUE; //Setting glewExperimental to true ensures GLEW
+                                //uses more modern techniques for managing OpenGL
+                                //functionality. Leaving it to its default value
+                                //of GL_FALSE might give issues when using the
+                                //core profile of OpenGL.
+
+    if (glewInit() != GLEW_OK)
+    {
+        std::cout << "Failed to initialize GLEW" << std::endl;
+        return -1;
+    }
+
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+
+    glViewport(0, 0, width, height);
+
+    return 0;
 }
