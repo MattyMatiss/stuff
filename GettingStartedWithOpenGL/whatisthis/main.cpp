@@ -2,11 +2,28 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-//
 
 void error_callback(int error, const char* description);
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+
+// Window dimensions
+const GLuint WIDTH = 800, HEIGHT = 600;
+
+// Shaders
+const GLchar* vertexShaderSource = "#version 330 core\n"
+                                   "layout (location = 0) in vec3 position;\n"
+                                   "void main()\n"
+                                   "{\n"
+                                   "gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
+                                   "}\0";
+
+const GLchar* fragmentShaderSource = "#version 330 core\n"
+                                     "out vec4 color;\n"
+                                     "void main()\n"
+                                     "{\n"
+                                     "color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+                                     "}\n\0";
 
 int main (int argc, char * argv[])
 {
@@ -37,6 +54,8 @@ int main (int argc, char * argv[])
     //the main context on the current thread
     glfwMakeContextCurrent(window);
 
+    glfwSetKeyCallback(window, key_callback); //registers the function with the proper callback
+
     //Setting glewExperimental to true ensures GLEW
     //uses more modern techniques for managing OpenGL
     //functionality. Leaving it to its default value
@@ -55,7 +74,58 @@ int main (int argc, char * argv[])
 
     glViewport(0, 0, width, height); //may be smaller, but not bigger. Transforms to -1;1 coords and back
 
-    glfwSetKeyCallback(window, key_callback); //registers the function with the proper callback
+    // VERTEX SHADER
+    GLuint vertexShader; //stores the vertex shader as a GLuint ID
+    vertexShader = glCreateShader(GL_VERTEX_SHADER); //creates a vertex shader
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); //attachs the shader source code to the shader object
+    glCompileShader(vertexShader); //compiles the shader
+
+    //checking for compile-time errors
+    GLint success;
+    GLchar infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success); //checks if compilation was successful
+
+    if(!success)
+    {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog); //retrieves the error message
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    // FRAGMENT SHADER (the same)
+    GLuint fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
+    if(!success)
+{
+    glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+    std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+}
+
+    // SHADER PROGRAM
+    GLuint shaderProgram; // ID
+    shaderProgram = glCreateProgram(); // creates and stores
+
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if(!success)
+    {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADERPROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    }
+
+    //deleting shader objects
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    glUseProgram(shaderProgram); //every shader and rendering call will
+                                 //now use this program object (and thus the shaders)
 
     //checks at the start of each loop iteration
     //if GLFW has been instructed to close,
