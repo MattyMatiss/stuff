@@ -34,28 +34,11 @@ std::string GetLastErrorAsString()
 int main(int argc,  char **argv)
 {
     setlocale(LC_ALL,"Russian");
-    map<set<string>, set<string>> reactions; // склеиваем input и output
-    //с разделителями и засовываем сюда. Задумка, что строчки
-    //будут приведены к единому формату и повторения исключатся
+    map<set<string>, set<string>> reactions;
 
-    set<string> components; // присутствующие компоненты
+    set<string> components;
 
-    // сначала проходим весь файл,
-    // в components пихаем все свободные
-    // в reactions через input и output пихаем реакции
-
-    // проходим реакции, проверяем по первой части, идет ли,
-    // если нет - удаляем
-
-    // добавляем в components компоненты из вторых частей reactions
-
-    /*  if(argc != 2)
-      {
-          cout << "Something wrong with arguments" << endl;
-          return 1;
-      }*/
-
-    ifstream source("C:\\Users\\Ogrigorieva\\stuff\\BioinformaticsCpntest\\bin\\Debug\\try.txt");/*argv[1]*/
+    ifstream source("C:\\Users\\Ogrigorieva\\stuff\\BioinformaticsCpntest\\bin\\Debug\\try.txt");
 
     if (!source.is_open())
     {
@@ -68,7 +51,6 @@ int main(int argc,  char **argv)
     while(getline(source, line))
     {
         size_t found = line.find_first_of("-");
-        // std::replace(line.begin(), line.end(), '+', ' ');
 
         if(found==std::string::npos)
         {
@@ -77,13 +59,9 @@ int main(int argc,  char **argv)
         else
         {
             string leftstr = line.substr(0, found);
-            string rightstr = line.substr(found+2, sizeof(line));
+            string rightstr = line.substr(found+2, line.length());
             set<string> lefttemp;
             set<string> righttemp;
-
-            //  cout << "Left: " << leftstr << endl;
-
-            //map<string> input; // сюда считываем числа до стрелочки
 
             char ch = '+';
             string number ="";
@@ -93,18 +71,15 @@ int main(int argc,  char **argv)
                 if(leftstr[x] != ch)
                 {
                     number += leftstr[x];
-                    //cout << "number: " << number << endl;
                 }
                 else
                 {
-                    // input.insert(number);
                     components.insert(number);
                     lefttemp.insert(number);
-                    //  cout << "number: " << number << endl;
                     number = "";
                 }
             }
-                    lefttemp.insert(number);
+            lefttemp.insert(number);
             components.insert(number);
             number = "";
             number += rightstr[0];
@@ -113,13 +88,10 @@ int main(int argc,  char **argv)
                 if(rightstr[x] != ch)
                 {
                     number += rightstr[x];
-                    //cout << "number: " << number << endl;
                 }
                 else
                 {
-                    // input.insert(number);
                     righttemp.insert(number);
-                    //  cout << "number: " << number << endl;
                     number = "";
                 }
             }
@@ -127,73 +99,25 @@ int main(int argc,  char **argv)
             righttemp.insert(number);
             number = "";
 
-            reactions.insert(pair<setstring, string>(leftstr, rightstr));
-
-
-//            input.insert(number);
-
-            //  map<string>::iterator iterin;
-
-            // for (iterin = input.begin(); iterin != input.end(); iterin++)
-            //   cout << *iterin << endl;
-
-
-            /* std::stringstream leftstream(left);
-             std::string numberstr;
-
-
-             while(std::getline(leftstream, numberstr, '+'))
-             {
-                 int number;
-                 stringstream(numberstr) >> number;
-                 input.insert(number);
-                 numberstr = "";
-             }
-
-
-             std::stringstream rightstream(left);
-
-             set<int> output; // сюда считываем числа после стрелочки
-
-             while(std::getline(rightstream, numberstr, '+'))
-             {
-                 int number;
-                 stringstream(numberstr) >> number;
-                 output.insert(number);
-                 numberstr = "";
-             }
-
-             set<int>::iterator iterout;
-
-             cout << "Chemicals:" << endl;
-             for (iterout = output.begin(); iterout != output.end(); iterout++)
-                 cout << *iterout << endl;
-
-             line="";
-
-             for (auto x : input)
-                 line += SSTR(x) + ' ';
-
-             string arrow = "->";
-             line.replace(line.end(), line.end(), arrow);
-
-             for (auto x : output)
-                 line += SSTR(x) + ' ';
-
-             //line.erase(line.end());*/
-
-            //!!!!!!!!!!!!!!  reactions.insert(line);
+            reactions.insert(pair<set<string>, set<string>>(lefttemp, righttemp));
         }
 
     }
 
+    cout << "Reactions:" << endl;
+    map<set<string>, set<string>>::iterator iter;
+    set<string>::iterator leftiter;
+    set<string>::iterator rightiter;
 
-
-    /*  cout << "Reactions:" << endl;
-      map<string>::iterator iter;
-
-      for (iter = reactions.begin(); iter != reactions.end(); iter++)
-          cout << *iter << endl;*/
+    for (iter = reactions.begin(); iter != reactions.end(); iter++)
+    {
+        for (leftiter=iter->first.begin(); leftiter != iter->first.end(); leftiter++)
+            cout << *leftiter << " ";
+        cout << "-> ";
+        for (rightiter=iter->second.begin(); rightiter != iter->second.end(); rightiter++)
+            cout << *rightiter << " ";
+        cout << endl;
+    }
 
     set<string>::iterator itercomp;
 
