@@ -3,16 +3,21 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
-bool checkReactionInput(vector<string>::iterator firstComp, vector<string>::iterator lastComp, const set<string>& components)
+inline bool checkReactionInput(vector<string>::iterator firstComp, vector<string>::iterator lastComp, const set<string>& components)
 {
     bool equal = false;
     for(; firstComp != lastComp; firstComp++)
     {
         if(components.find(*firstComp) != components.end())
+        {
             equal = true;
+
+        }
         else
         {
             equal = false;
@@ -24,11 +29,14 @@ bool checkReactionInput(vector<string>::iterator firstComp, vector<string>::iter
 
 int main()
 {
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+
     vector<pair<vector<string>, vector<string>>> reactions;
 
     set<string> components;
 
-    ifstream source("try.txt");
+    //ifstream source("try.txt");
+    ifstream source("short.txt");
 
     string number;
     char ch;
@@ -38,6 +46,7 @@ int main()
     vector<string> lefttemp;
     vector<string> righttemp;
     size_t x;
+    bool equal;
 
     string line;
     while(getline(source, line)) // построчно считываем вход
@@ -122,7 +131,23 @@ int main()
         // начинаем смотреть, какие реакции идут
         for (iter = reactions.begin(); iter != reactions.end();)
         {
-            if (checkReactionInput(iter->first.begin(), iter->first.end(), components))
+            equal = false;
+            for(rightiter=iter->first.begin(); rightiter != iter->first.end(); rightiter++)
+            {
+                if(components.find(*rightiter) != components.end())
+                {
+                    equal = true;
+                  //  rightiter=reactions[iter]->first.erase(*rightiter);
+                   // if(rightiter==iter->first.end())
+                   //     break;
+                }
+                else
+                {
+                    equal = false;
+                    break;
+                }
+            }
+            if (equal) // checkReactionInput(iter->first.begin(), iter->first.end(), components))
             {
                 newgoingreactionfound = true;
                 for (rightiter=iter->second.begin(); rightiter != iter->second.end(); rightiter++)
@@ -130,9 +155,10 @@ int main()
                     components.insert(*rightiter);
                 }
 
-               iter = reactions.erase(iter);
-               if(iter == reactions.end())
-                   break;
+                iter = reactions.erase(iter);
+                //break; // !!!!!!!!
+                if(iter == reactions.end())
+                    break;
             }
             iter++;
         }
@@ -144,6 +170,10 @@ int main()
     for (itercomp = components.begin(); itercomp != components.end(); itercomp++)
         cout << *itercomp << endl;
 
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    auto duration = duration_cast<seconds>( t2 - t1 ).count();
+
+    cout << duration << endl;
 
     return 0;
 }
