@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
+#include <set>
 
 using namespace std;
 
@@ -24,8 +25,9 @@ void findAllSubs(string left, string right, int fromWhatpositionToLook, const st
     {
         whatShouldBeIncluded.push_back(make_pair(found, found + foundpart.length()-1));
         final.push_back(found+1);
-        if(remainingpart.length() > 0)
-            findAllSubs(remainingpart, "", found + foundpart.length(), DnaString);
+        // важные две строчки
+        //if(remainingpart.length() > 0)
+           // findAllSubs(remainingpart, "", found + foundpart.length(), DnaString);
     }
     else // если не нашли
     {
@@ -341,13 +343,13 @@ bool makeItPerfect(string DnaSequence, vector<string> reads)
     for(WSBIiter = whatShouldBeIncluded.begin(); WSBIiter != whatShouldBeIncluded.end(); WSBIiter++)
         cout << WSBIiter->first << " " << WSBIiter->second << endl;
 
-    return checkNumbersOfReads(whatShouldBeIncluded, reads);
-    /*if(checkNumbersOfReads(whatShouldBeIncluded, reads)) // если все прекрасно, количество позиций и чтений совпадают
-        return DnaSequence;
+   // return checkNumbersOfReads(whatShouldBeIncluded, reads);
+    if(checkNumbersOfReads(whatShouldBeIncluded, reads)) // если все прекрасно, количество позиций и чтений совпадают
+        return 1;
     else // если нет
     {
-        makeItPerfect(cutitoff(DnaSequence, getUniquePositions()), reads);
-    }*/
+       return makeItPerfect(cutitoff(DnaSequence, getUniquePositions()), reads);
+    }
 }
 
 bool makeItPerfectDNA(string DnaSequence, string subseq)
@@ -415,12 +417,12 @@ int main()
     string OriginalDna;
     string DnaSequence;
 
-    ifstream source("reads.txt");
+    ifstream source("C:\\Users\\Ogrigorieva\\stuff\\BioinformaticsContest\\build-lastlittle-Desktop_Qt_5_7_1_MinGW_32bit-Debug\\debug\\3.txt");
 
     string counttemp;
     int count;
 
-    getline(source, OriginalDna);
+    getline(source, DnaSequence);
     getline(source, counttemp);
     istringstream convert(counttemp);
     convert >> count;
@@ -432,37 +434,33 @@ int main()
     {
         reads.push_back(readtemp);
     }
+    source.close();
 
-    cout << DnaSequence << endl << count << endl;
+    cout << DnaSequence << endl;
 
     vector<string>::iterator readsiter;
 
     int i = 0;
-    for(readsiter = reads.begin(); readsiter != reads.end(); readsiter++, i++)
+    for(readsiter = reads.begin(); readsiter != reads.end(); readsiter++)
     {
-        cout << "#" << i << ": ";
+        cout << "#" << i++ << ": ";
         cout << *readsiter << " " << "length: " << readsiter->length() << endl;
     }
 
-    i = 0;
-    for(auto x : DnaSequence)
-    {
-        cout << i++ << x << "  ";
-    }
-    cout << endl;
-
-
-    ifstream dnas("sequences.txt");
+   // ifstream dnas("sequences.txt");
     //getline(dnas, DnaSequence);
 
     /// вот тут начинается цирк с огнями
+
+    cout << makeItPerfect(DnaSequence, reads);
+
 
     //cout << makeItPerfect(DnaSequence, reads);
     /*&& !isSubSequence(DnaSequence, OriginalDna, DnaSequence.length(), OriginalDna.length())
                       && (isSubSeqOf(OriginalDna, DnaSequence))
                       && (!makeItPerfectDNA(OriginalDna, DnaSequence))
                       &&*/
-    while( getline(dnas, DnaSequence) )
+  /*  while( getline(dnas, DnaSequence) )
     {
         if(!makeItPerfect(DnaSequence, reads))
         {
@@ -492,7 +490,7 @@ int main()
             else
                 cout << "Not a subsequence" << endl;
         }
-    }
+    }*/
 
 
 
