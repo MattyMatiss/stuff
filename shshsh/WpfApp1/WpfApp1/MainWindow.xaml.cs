@@ -71,26 +71,18 @@ namespace WpfApp1
 
         static public async Task PostSection()
         {
-            var response = await _httpClient.PostAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
+            //var response = await _httpClient.PostAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
 
-            if (response.StatusCode != HttpStatusCode.OK)
-                throw new HttpRequestException($"Failed to get notes array [{response.StatusCode}]");
-
-            _jsonString = await response.Content.ReadAsStringAsync();
-
-            Sections = JsonConvert.DeserializeObject<List<Section>>(_jsonString);
+            //if (response.StatusCode != HttpStatusCode.OK)
+            //    throw new HttpRequestException($"Error [{response.StatusCode}]");
         }
 
         static public async Task PutSection()
         {
-            var response = await _httpClient.PutAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
+            //var response = await _httpClient.PutAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
 
-            if (response.StatusCode != HttpStatusCode.OK)
-                throw new HttpRequestException($"Failed to get notes array [{response.StatusCode}]");
-
-            _jsonString = await response.Content.ReadAsStringAsync();
-
-            Sections = JsonConvert.DeserializeObject<List<Section>>(_jsonString);
+            //if (response.StatusCode != HttpStatusCode.OK)
+            //    throw new HttpRequestException($"Error [{response.StatusCode}]");
         }
 
     }
@@ -102,39 +94,21 @@ namespace WpfApp1
 
         }
 
-        private int _id;
-        private string _name;
-        private string _content;
+        //private int _id;
+        //private string _name;
+        //private string _content;
 
         public int Id {
-            get
-            {
-                return _id;
-            }
-             set
-            {
-                _id = value;
-            }
+            get;
+            set;
         }
         public string Name {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                _name = value;
-            }
+            get;
+            set;
         }
         public string Description {
-            get
-            {
-                return _content;
-            }
-            set
-            {
-                _content = value;
-            }
+            get;
+            set;
         }
         public override string ToString()
         {
