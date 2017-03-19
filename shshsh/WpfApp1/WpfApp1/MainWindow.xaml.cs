@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 
 namespace WpfApp1
 {
@@ -21,9 +22,11 @@ namespace WpfApp1
             InitializeComponent();
         }
 
-        private void PostButton_Click(object sender, RoutedEventArgs e)
+        private async void PostButton_Click(object sender, RoutedEventArgs e)
         {
             // create new
+            Section Sect = new Section(NameTxt.Text, DescriptionTxt.Text);
+            await DataGetter.PostSection(Sect);
         }
 
         private void PutButton_Click(object sender, RoutedEventArgs e)
@@ -52,13 +55,13 @@ namespace WpfApp1
 
     public class DataGetter
     {
-        static private Uri _serverDomain = new Uri($"http://noticeatest.somee.com/");
-        static private string _jsonString;
-        static private HttpClient _httpClient = new HttpClient();
+        static private Uri _serverDomain = new Uri("http://noticeatest.somee.com/");
         static public List<Section> Sections;
 
         static public async Task GetAllSections()
         {
+            HttpClient _httpClient = new HttpClient();
+            string _jsonString;
             var response = await _httpClient.GetAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
 
             if (response.StatusCode != HttpStatusCode.OK)
@@ -69,29 +72,33 @@ namespace WpfApp1
             Sections = JsonConvert.DeserializeObject<List<Section>>(_jsonString);
         }
 
-        static public async Task PostSection()
+        static public async Task PostSection(Section Sect)
         {
-            //var response = await _httpClient.PostAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
+            HttpClient httpClient = new HttpClient();
+            string _jsonString = JsonConvert.SerializeObject(Sect);
+            var stringContent = new StringContent(_jsonString, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync(new Uri($"{_serverDomain}api/sections/"), stringContent).ConfigureAwait(false);
 
             //if (response.StatusCode != HttpStatusCode.OK)
             //    throw new HttpRequestException($"Error [{response.StatusCode}]");
         }
 
-        static public async Task PutSection()
-        {
-            //var response = await _httpClient.PutAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
+        //static public async Task PutSection()
+        //{
+        //    var response = await _httpClient.PutAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
 
-            //if (response.StatusCode != HttpStatusCode.OK)
-            //    throw new HttpRequestException($"Error [{response.StatusCode}]");
-        }
+        //    if (response.StatusCode != HttpStatusCode.OK)
+        //        throw new HttpRequestException($"Error [{response.StatusCode}]");
+        //}
 
     }
 
     public class Section
     {
-        public Section()
+        public Section(string Name, string Description)
         {
-
+            this.Name = Name;
+            this.Description = Description;
         }
 
         //private int _id;
