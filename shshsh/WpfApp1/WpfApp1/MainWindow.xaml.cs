@@ -79,16 +79,13 @@ namespace WpfApp1
             var stringContent = new StringContent(_jsonString, Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync(new Uri($"{_serverDomain}api/sections/"), stringContent).ConfigureAwait(false);
 
-            //if (response.StatusCode != HttpStatusCode.OK)
-            //    throw new HttpRequestException($"Error [{response.StatusCode}]");
+            if (response.StatusCode != HttpStatusCode.Created)
+                throw new HttpRequestException($"Error [{response.StatusCode}]");
         }
 
         //static public async Task PutSection()
         //{
-        //    var response = await _httpClient.PutAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
 
-        //    if (response.StatusCode != HttpStatusCode.OK)
-        //        throw new HttpRequestException($"Error [{response.StatusCode}]");
         //}
 
     }
@@ -100,10 +97,6 @@ namespace WpfApp1
             this.Name = Name;
             this.Description = Description;
         }
-
-        //private int _id;
-        //private string _name;
-        //private string _content;
 
         public int Id {
             get;
