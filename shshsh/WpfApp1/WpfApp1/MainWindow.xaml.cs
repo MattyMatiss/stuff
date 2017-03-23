@@ -38,7 +38,9 @@ namespace WpfApp1
         {
             // get all as a list
 
-            await DataGetter.GetAllSections();
+            
+                await DataGetter.GetAllSections();
+            
             SectionsList.ItemsSource = DataGetter.Sections;
         }
 
@@ -62,25 +64,68 @@ namespace WpfApp1
         {
             HttpClient _httpClient = new HttpClient();
             string _jsonString;
-            var response = await _httpClient.GetAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
+            HttpResponseMessage response;
 
-            if (response.StatusCode != HttpStatusCode.OK)
-                throw new HttpRequestException($"Failed to get notes array [{response.StatusCode}]");
+            try
+            {
+                response = await _httpClient.GetAsync(new Uri($"{_serverDomain}api/sections")).ConfigureAwait(false);
 
-            _jsonString = await response.Content.ReadAsStringAsync();
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    MessageBox.Show(response.ReasonPhrase, response.StatusCode.ToString());
+                }
 
-            Sections = JsonConvert.DeserializeObject<List<Section>>(_jsonString);
+                _jsonString = await response.Content.ReadAsStringAsync();
+
+                Sections = JsonConvert.DeserializeObject<List<Section>>(_jsonString);
+            }
+            catch (TaskCanceledException ex)
+            {
+                if (!ex.CancellationToken.IsCancellationRequested)
+                    MessageBox.Show(ex.Message, "Request TimeOut");
+                else
+                {
+                    MessageBox.Show("The request was cancelled");
+                }
+            }
+            catch (JsonSerializationException)
+            {                
+            }
+            catch (Exception generalEx)
+            {
+                MessageBox.Show(generalEx.ToString(), "Unknown exception");
+            }
+
         }
 
         static public async Task PostSection(Section Sect)
         {
             HttpClient httpClient = new HttpClient();
             string _jsonString = JsonConvert.SerializeObject(Sect);
-            var stringContent = new StringContent(_jsonString, Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync(new Uri($"{_serverDomain}api/sections/"), stringContent).ConfigureAwait(false);
+            StringContent stringContent = new StringContent(_jsonString, Encoding.UTF8, "application/json");
 
-            if (response.StatusCode != HttpStatusCode.Created)
-                throw new HttpRequestException($"Error [{response.StatusCode}]");
+            try
+            {
+                HttpResponseMessage response = await httpClient.PostAsync(new Uri($"{_serverDomain}api/sections/"), stringContent).ConfigureAwait(false);
+
+                if (response.StatusCode != HttpStatusCode.Created)
+                {
+                    MessageBox.Show(response.ReasonPhrase, response.StatusCode.ToString());
+                }
+            }
+            catch(TaskCanceledException ex)
+            {
+                if (!ex.CancellationToken.IsCancellationRequested)
+                    MessageBox.Show(ex.Message, "Request TimeOut");
+                else
+                {
+                    MessageBox.Show("The request was cancelled");
+                }
+            }
+            catch (Exception generalEx)
+            {
+                MessageBox.Show(generalEx.ToString(), "Unknown exception");
+            }
         }
 
         //static public async Task PutSection()
